@@ -18,7 +18,7 @@ var getAllForms = function(done) {
         
         filenames.forEach(function(filename) {
             
-            var form = require(PATH.join("forms", filename.split(".")[0]));
+            var form = require("./forms/" + filename.split(".")[0]);
             forms.push(form());
         });
         
@@ -30,6 +30,6 @@ exports.handler = (event, context, callback) => {
     
     getAllForms(function (err, forms) {
        
-        callback(err, forms); 
+        callback(err, {"forms": forms}); 
     });
 };
