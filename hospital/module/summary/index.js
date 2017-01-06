@@ -7,15 +7,15 @@ var getAllForms = function(done) {
     var forms = [];
   
     FS.readdir("res/forms", function(err, filenames) {
-        
+		
         if (err) {
-            onError(err);
+            done(err);
             return;
         }
         
         filenames.forEach(function(filename) {
             
-            var form = require("./res/forms/" + filename.split(".")[0]);
+            var form = require("../../res/forms/" + filename.split(".")[0]);
             forms.push(form());
         });
         

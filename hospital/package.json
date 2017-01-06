@@ -9,6 +9,6 @@
   "author": "gitcloned",
   "license": "ISC",
   "dependencies": {
-    "aws-sdk": "^2.7.20"
+    "dynamodb-doc": "^1.0.0"
   }
 }
