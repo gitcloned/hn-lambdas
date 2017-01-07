@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "dynamodb-doc": "^1.0.0",
+    "dynamodb-marshaler": "^2.0.0",
     "moment": "^2.17.1",
     "uuid": "^3.0.1"
   }
