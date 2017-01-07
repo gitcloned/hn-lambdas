@@ -4,7 +4,6 @@
 const doc = require('dynamodb-doc');
 const moment = require('moment');
 const uuidV1 = require('uuid/v1');
-const marshalItem = require('dynamodb-marshaler').marshalItem;
 
 const dynamo = new doc.DynamoDB();
 
@@ -76,25 +75,13 @@ module.exports.handle = function (event, context, callback) {
                     OS: DeviceOS
                 };
 
-                Item.Score = event.Score;
-                Item.ScoreSentiment = event.ScoreSentiment;
-                
+                Item.Score = 10;
+                Item.ScoreSentiment = 0;
                 Item.Timestamp = moment.utc(Timestamp).toDate().toISOString();
-                
-                Item = marshalItem(Item)
-                
-                Item.FormId = { "S": FormId };
 
-                console.log("Inserting Form Response [%s]: %j", TableName, Item);
+                console.log("Inserting Form Response: %j", Item);
 
-                dynamo.putItem({ TableName: TableName, Item: Item }, function (err, res) {
-                    
-                    console.log("got response")
-                    if (err) console.log("Error occurred while writing to db: %s", err);
-                    console.log("Inserted to db, res: %j", res);
-                    
-                    done(err, res);
-                });
+                dynamo.putItem({ TableName: TableName, Item: Item }, done);
             } catch(e) {
                 done({ message: e ? e.toString() : "Unknown error occurred while saving data" });
             }
@@ -102,7 +89,7 @@ module.exports.handle = function (event, context, callback) {
         case 'PUT':
             var body = JSON.parse(event.body);
             var Item = body.Item;
-            dynamo.put({ TableName: TableName, Item: Item }, done);
+            dynamo.putItem({ TableName: TableName, Item: Item }, done);
             break;
         default:
             done(new Error('Unsupported method "${event.httpMethod}"'));
