@@ -75,8 +75,8 @@ module.exports.handle = function (event, context, callback) {
                     OS: DeviceOS
                 };
 
-                Item.Score = 10;
-                Item.ScoreSentiment = 0;
+                Item.Score = typeof event.Score === "number" ? event.Score : 0;
+                Item.Sentiment = typeof event.ScoreSentiment === "number" ? event.ScoreSentiment : 0;
                 Item.Timestamp = moment.utc(Timestamp).toDate().toISOString();
 
                 console.log("Inserting Form Response: %j", Item);
