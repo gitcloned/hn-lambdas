@@ -23,7 +23,7 @@ var getAllForms = function(done) {
     });
 };
 
-module.exports.handle = (event, context, callback) => {
+module.exports.handle = function (event, context, callback) {
     
     getAllForms(function (err, forms) {
        
