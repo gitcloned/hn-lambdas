@@ -67,7 +67,7 @@ module.exports.handle = function (event, context, callback) {
                 Item.ResponseId = ResponseId;
                 Item.PatientId = event.PatientId || PatientId;
                 Item.ClientId = event.ClientId || ClientId;
-                Item.Answers = Answers;
+                // Item.Answers = Answers;
                 Item.Device = {
                     Id: DeviceId,
                     Type: DeviceType,
@@ -78,6 +78,18 @@ module.exports.handle = function (event, context, callback) {
                 Item.Score = typeof event.Score === "number" ? event.Score : 0;
                 Item.Sentiment = typeof event.ScoreSentiment === "number" ? event.ScoreSentiment : 0;
                 Item.Timestamp = moment.utc(Timestamp).toDate().toISOString();
+                
+                if (typeof Answers === "object") {
+                    
+                    for (var key in Answers) {
+                        if (Answers.hasOwnProperty(key)) {
+                            
+                            var Q = key, Score = Answers[key].Score, Resp = Answers[key].Resp;
+                            Item[Q + "_" + Score] = Score;
+                            Item[Q + "_" + Resp] = Score;
+                        }
+                    }
+                }
 
                 console.log("Inserting Form Response: %j", Item);
 
