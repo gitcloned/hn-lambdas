@@ -7,7 +7,7 @@ main.handler({
     "ResponseId": "asas",
     "PatientId": "P000001",
     "ClientId": "SPPC",
-    "body": "{}",
+    "body": "{\"Q0001\": { \"Score\": 4, \"Resp\": \"Good\"  }}",
     "DeviceId": "5bd76b07a3707cd2",
     "DeviceType": "AndroidDevice",
     "DeviceModel": "Android SDK built for x86",

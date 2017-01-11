@@ -15,6 +15,11 @@ exports.handler = function (event, context, callback) {
         var survey = require('./module/survey/index');
 
         return survey.handle(event, context, callback);
+    } else if (event.name === "responses") {
+
+        var survey = require('./module/responses/index');
+
+        return survey.handle(event, context, callback);
     } else
         callback("Invalid operation, specify a valid event 'name'.");
 };

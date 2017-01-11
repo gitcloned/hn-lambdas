@@ -9,6 +9,8 @@ const dynamo = new doc.DynamoDB();
 
 var D = require('./utils/date');
 
+var Form = require("../../form");
+
 module.exports.handle = function (event, context, callback) {
     
     console.log('Received event:', JSON.stringify(event, null, 2));
@@ -19,8 +21,9 @@ module.exports.handle = function (event, context, callback) {
 
     event = event || {};
     event.period = event.period || "1d";
+    event.httpMethod = event.httpMethod || "GET";
     
-    var dates = new D(moment.utc().toDate()).get(period);
+    var dates = new D(moment.utc().toDate()).get(event.period);
 
     console.log("got http method: %s", event.httpMethod);
     
@@ -37,15 +40,43 @@ module.exports.handle = function (event, context, callback) {
     switch (event.httpMethod) {
         
         case 'GET':
-            var body = event.body ? JSON.parse(event.body) : {};
+            //try {
+                var body = event.body ? JSON.parse(event.body) : {};
+                
+                var FormId = event.FormId;
+                    
+                if (!FormId) return done({ "message": "Missing 'FormId' cannot fetch response." });
+                
+                var form = new Form(FormId);
 
-            /** Get FilterExpression
-             *  */
-            var FilterExpression = [], ExpressionAttributeValues = {}, AttributesToGet = [];
-            FilterExpression.push("Timestamp > :gte");
-            ExpressionAttributeValues[":gte"] = { "S": dates.$gte.toISOString() };
+                /** Get FilterExpression
+                 *  */
+                var FilterExpression = [ "FormId = :form" ], ExpressionAttributeValues = {}, AttributesToGet = form.dynamoDBSelectClauses();
+                FilterExpression.push("CTimestamp > :gte");
+                
+                ExpressionAttributeValues[":gte"] = dates.$gte.toISOString();
+                ExpressionAttributeValues[":form"] = FormId;
+                
+                AttributesToGet.push("ResponseId");
+                AttributesToGet.push("Timestamp");
+                AttributesToGet.push("Score");
+                
+                var params = {
+                    TableName: TableName,
+                    //AttributesToGet: AttributesToGet,
+                    FilterExpression: FilterExpression.join(" AND "),
+                    ExpressionAttributeValues: ExpressionAttributeValues
+                };
+                    
+                console.log("querying: %j", params);
 
-            dynamo.scan(body, done);
+                dynamo.scan(params, function(err, res) {
+                    if (err) return done(err);
+                    done(null, res.Items);
+                });
+            /*} catch(e) {
+                done(e.toString());
+            }*/
             break;
         
         default:

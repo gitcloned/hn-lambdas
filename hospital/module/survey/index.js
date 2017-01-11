@@ -59,7 +59,7 @@ module.exports.handle = function (event, context, callback) {
                 var DeviceModel = event.DeviceModel || "unknown";
                 var DeviceOS = event.DeviceOS || "unknown";
                 
-                var Timestamp = event.Timestamp || moment.utc().format();
+                var CTimestamp = event.Timestamp || moment.utc().format();
 
                 var Item = {};
 
@@ -77,7 +77,7 @@ module.exports.handle = function (event, context, callback) {
 
                 Item.Score = typeof event.Score === "number" ? event.Score : 0;
                 Item.Sentiment = typeof event.ScoreSentiment === "number" ? event.ScoreSentiment : 0;
-                Item.Timestamp = moment.utc(Timestamp).toDate().toISOString();
+                Item.CTimestamp = moment.utc(CTimestamp).toDate().toISOString();
                 
                 if (typeof Answers === "object") {
                     
@@ -85,8 +85,8 @@ module.exports.handle = function (event, context, callback) {
                         if (Answers.hasOwnProperty(key)) {
                             
                             var Q = key, Score = Answers[key].Score, Resp = Answers[key].Resp;
-                            Item[Q + "_" + Score] = Score;
-                            Item[Q + "_" + Resp] = Score;
+                            Item[Q + "_Score"] = Score;
+                            Item[Q + "_Resp"] = Resp;
                         }
                     }
                 }
