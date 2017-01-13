@@ -80,7 +80,7 @@ D.prototype.getMOM = function () {
 
 D.prototype.get = function (period) {
 
-    console.log(" geting date for period; %s", period);
+    // console.log(" geting date for period; %s", period);
 
     period = period ? period : "";
     period = period.toLowerCase();
@@ -97,7 +97,7 @@ D.prototype.get = function (period) {
 
     var num = parseInt(period);
 
-    console.log(" geting date for period, num; %s", num);
+    // console.log(" geting date for period, num; %s", num);
 
     if (!isNaN(num)) {
 
@@ -120,7 +120,7 @@ D.prototype.get = function (period) {
             return this.getQOQ();
     }
 
-    console.log(" returning date");
+    // console.log(" returning date");
 
     return this.date;
 }

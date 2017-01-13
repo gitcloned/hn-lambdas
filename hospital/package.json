@@ -4,7 +4,7 @@
   "description": "Hospital App Summary API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "gitcloned",
   "license": "ISC",
@@ -12,5 +12,9 @@
     "dynamodb-doc": "1.0.0",
     "moment": "^2.17.1",
     "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
   }
 }

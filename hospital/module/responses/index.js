@@ -13,7 +13,7 @@ var Form = require("../../form");
 
 module.exports.handle = function (event, context, callback) {
     
-    console.log('Received event:', JSON.stringify(event, null, 2));
+    // console.log('Received event:', JSON.stringify(event, null, 2));
 
     var TableName = "HospitalFormSurveyResults";
     var ClientId = "SPPC";
@@ -25,7 +25,7 @@ module.exports.handle = function (event, context, callback) {
     
     var dates = new D(moment.utc().toDate()).get(event.period);
 
-    console.log("got http method: %s", event.httpMethod);
+    // console.log("got http method: %s", event.httpMethod);
     
     const done = function (err, res) { 
         callback(null, {
@@ -44,7 +44,9 @@ module.exports.handle = function (event, context, callback) {
                 var body = event.body ? JSON.parse(event.body) : {};
                 
                 var FormId = event.FormId;
+                var ClientId = event.ClientId;
                     
+                if (!ClientId) return done({ "message": "Missing 'ClientId' cannot fetch response." });
                 if (!FormId) return done({ "message": "Missing 'FormId' cannot fetch response." });
                 
                 var form = new Form(FormId);
@@ -77,6 +79,69 @@ module.exports.handle = function (event, context, callback) {
             /*} catch(e) {
                 done(e.toString());
             }*/
+            break;
+            
+        case 'POST':
+        
+            try {
+                // console.log("preparing item to insert");
+                
+                var Answers = JSON.parse(body);
+                var FormId = event.FormId;
+                var ClientId = event.ClientId;
+                var PName = event.PatientName;
+                var PContact = event.PatientContact;
+                    
+                if (!ClientId) return done({ "message": "Missing 'ClientId' cannot fetch response." });
+                if (!Answers || !FormId) return done({ "message": "Missing 'FormId' or 'Answers', cannot store form response." });
+                if (!PName || !PContact) return done({ "message": "Missing 'Patient Name' or 'Contact', cannot store form response." });
+                
+                var ResponseId = event.ResponseId || uuidV1();
+                
+                var DeviceId = event.DeviceId || "unknown";
+                var DeviceType = event.DeviceType || "unknown";
+                var DeviceModel = event.DeviceModel || "unknown";
+                var DeviceOS = event.DeviceOS || "unknown";
+                
+                var CTimestamp = event.Timestamp || moment.utc().format();
+
+                var Item = {};
+
+                Item.FormId = FormId;
+                Item.ResponseId = ResponseId;
+                Item.PName = PName;
+                Item.PContact = PContact;
+                Item.ClientId = event.ClientId || ClientId;
+                // Item.Answers = Answers;
+                Item.Device = {
+                    Id: DeviceId,
+                    Type: DeviceType,
+                    Model: DeviceModel,
+                    OS: DeviceOS
+                };
+
+                Item.Score = typeof event.Score === "number" ? event.Score : 0;
+                Item.Sentiment = typeof event.ScoreSentiment === "number" ? event.ScoreSentiment : 0;
+                Item.CTimestamp = moment.utc(CTimestamp).toDate().toISOString();
+                
+                if (typeof Answers === "object") {
+                    
+                    for (var key in Answers) {
+                        if (Answers.hasOwnProperty(key)) {
+                            
+                            var Q = key, Score = Answers[key].Score, Resp = Answers[key].Resp;
+                            Item[Q + "_Score"] = Score;
+                            Item[Q + "_Resp"] = Resp;
+                        }
+                    }
+                }
+
+                // console.log("Inserting Form Response: %j", Item);
+
+                dynamo.putItem({ TableName: TableName, Item: Item }, done);
+            } catch(e) {
+                done({ message: e ? e.toString() : "Unknown error occurred while saving data" });
+            }
             break;
         
         default:

@@ -6,7 +6,7 @@ var Form = require("../../form");
 
 module.exports.handle = function (event, context, callback) {
     
-    console.log('Received event:', JSON.stringify(event, null, 2));
+    // console.log('Received event:', JSON.stringify(event, null, 2));
 
     var TableName = "HospitalFormSurveyResults";
     var body = event.body;
@@ -14,7 +14,7 @@ module.exports.handle = function (event, context, callback) {
     event = event || {};
     event.httpMethod = event.httpMethod || "GET";
 
-    console.log("got http method: %s", event.httpMethod);
+    // console.log("got http method: %s", event.httpMethod);
     
     const done = function (err, res) { 
         callback(null, {
@@ -34,6 +34,8 @@ module.exports.handle = function (event, context, callback) {
                 
                 var FormId = event.FormId;
                 var ClientId = event.ClientId;
+                
+                // console.log("got client Id: %s", ClientId)
                     
                 if (!ClientId) return done({ "message": "Missing 'ClientId' cannot fetch response." });
                 
@@ -48,7 +50,7 @@ module.exports.handle = function (event, context, callback) {
                             "question_id": questions[i]["question_id"],
                             "question_type": questions[i]["question_type"] || "Checkboxes",
                             "question_title": questions[i]["question_title"],
-                            "required": questions[i]["required"] ? questions[i]["required"] : false,
+                            "required": questions[i]["required"] ? "true" : "false",
                             "choices": questions[i]["choices"] ? questions[i]["choices"].toString() : ""
                         })
                     }

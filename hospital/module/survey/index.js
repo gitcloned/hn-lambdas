@@ -49,8 +49,13 @@ module.exports.handle = function (event, context, callback) {
                 
                 var Answers = JSON.parse(body);
                 var FormId = event.FormId;
-                
+                var ClientId = event.ClientId;
+                var PName = event.PatientName;
+                var PContact = event.PatientContact;
+                    
+                if (!ClientId) return done({ "message": "Missing 'ClientId' cannot fetch response." });
                 if (!Answers || !FormId) return done({ "message": "Missing 'FormId' or 'Answers', cannot store form response." });
+                if (!PName || !PContact) return done({ "message": "Missing 'Patient Name' or 'Contact', cannot store form response." });
                 
                 var ResponseId = event.ResponseId || uuidV1();
                 
@@ -65,7 +70,8 @@ module.exports.handle = function (event, context, callback) {
 
                 Item.FormId = FormId;
                 Item.ResponseId = ResponseId;
-                Item.PatientId = event.PatientId || PatientId;
+                Item.PName = PName;
+                Item.PContact = PContact;
                 Item.ClientId = event.ClientId || ClientId;
                 // Item.Answers = Answers;
                 Item.Device = {
