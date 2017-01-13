@@ -72,7 +72,7 @@ module.exports.handle = function (event, context, callback) {
 
                 dynamo.scan(params, function(err, res) {
                     if (err) return done(err);
-                    done(null, res.Items);
+                    callback(null, res && res.Items ? res.Items : []);
                 });
             /*} catch(e) {
                 done(e.toString());

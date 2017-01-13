@@ -2,7 +2,7 @@
 var FS = require('fs');
 var PATH = require('path');
 
-var getAllForms = function(done) {
+var getAllForms = module.exports.getAllForms = function(done) {
     
     var forms = [];
   
