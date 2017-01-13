@@ -10,11 +10,6 @@ exports.handler = function (event, context, callback) {
         var summary = require('./module/summary/index');
 
         return summary.handle(event, context, callback);
-    } else if (event.name === "survey") {
-
-        var survey = require('./module/survey/index');
-
-        return survey.handle(event, context, callback);
     } else if (event.name === "responses") {
 
         var survey = require('./module/responses/index');
@@ -23,6 +18,11 @@ exports.handler = function (event, context, callback) {
     } else if (event.name === "form") {
 
         var survey = require('./module/form/index');
+
+        return survey.handle(event, context, callback);
+    } else if (event.name === "users") {
+
+        var survey = require('./module/users/index');
 
         return survey.handle(event, context, callback);
     } else

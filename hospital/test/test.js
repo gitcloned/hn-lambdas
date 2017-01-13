@@ -202,7 +202,7 @@ describe('Response API', function (params) {
                             ClientId: "SPPC",
                             httpMethod: 'POST',
                             body: '{}',
-                            PName: 'Abc'
+                            UserName: 'Abc'
                         }, {}, function (err, resp) {
                             
                             should.not.exist(err);
@@ -217,7 +217,7 @@ describe('Response API', function (params) {
             })
         })
         
-        describe('with response', function (params) {
+        describe('with proper response', function (params) {
             
             it("should return missing config error", function (done) {
             
@@ -227,8 +227,148 @@ describe('Response API', function (params) {
                     httpMethod: 'POST',
                     FormId: 'F00001',
                     body: '{}',
-                    PatientName: 'Abc',
-                    PatientContact: '1919191',
+                    UserName: 'Abc',
+                    UserContact: '1919191',
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    resp.body.should.equal('Missing region in config');
+                    
+                    done();
+                });
+            })
+        })
+    });
+})
+
+describe('User API', function (params) {
+    
+    var userAPI = require('../module/users/index');
+    
+    describe('#get()', function () {
+    
+        describe('without ClientId', function (params) {
+            
+            it("should return error", function (done) {
+            
+                userAPI.handle({ 
+                    name: "users",
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    
+                    done();
+                });
+            })
+        })
+        
+        describe('with proper request', function (params) {
+            
+            it("should return missing config error", function (done) {
+            
+                userAPI.handle({ 
+                    name: "users",
+                    ClientId: "SPPC"
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    resp.body.should.equal('Missing region in config');
+                    
+                    done();
+                });
+            })
+        })
+    });
+    
+    describe('#post()', function () {
+    
+        describe('without ClientId', function (params) {
+            
+            it("should return error", function (done) {
+            
+                userAPI.handle({ 
+                    name: "users",
+                    httpMethod: 'POST'
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    
+                    done();
+                });
+            })
+        })
+        
+        describe('with invalid User', function (params) {
+            
+            it("should return error", function (done) {
+            
+                userAPI.handle({ 
+                    name: "users",
+                    ClientId: "SPPC",
+                    httpMethod: 'POST'
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    
+                    userAPI.handle({ 
+                        name: "users",
+                        ClientId: "SPPC",
+                        httpMethod: 'POST',
+                        FirstName: 'Andrew'
+                    }, {}, function (err, resp) {
+                        
+                        should.not.exist(err);
+                        should.exist(resp);
+                        should.exist(resp.statusCode);
+                        resp.statusCode.should.equal('400');
+                        
+                        userAPI.handle({ 
+                            name: "users",
+                            ClientId: "SPPC",
+                            httpMethod: 'POST',
+                            FirstName: 'Andrew',
+                            Contact: 'ABC'
+                        }, {}, function (err, resp) {
+                            
+                            should.not.exist(err);
+                            should.exist(resp);
+                            should.exist(resp.statusCode);
+                            resp.statusCode.should.equal('400');
+                            
+                            done();
+                        });
+                    });
+                });
+            })
+        })
+        
+        describe('with valid user', function (params) {
+            
+            it("should return missing config error", function (done) {
+            
+                userAPI.handle({ 
+                    "httpMethod": "POST",
+                    "FirstName": "Suresh",
+                    "Contact": "98979898989",
+                    "LastName": "Jain",
+                    "Type": "Patient",
+                    "name": "users",
+                    "ClientId": "SPPC"
                 }, {}, function (err, resp) {
                     
                     should.not.exist(err);
