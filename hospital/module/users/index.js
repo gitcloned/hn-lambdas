@@ -39,7 +39,7 @@ module.exports.handle = function (event, context, callback) {
                 
                 var ClientId = event.ClientId;
                 var Contact = event.Contact;
-                var Type = event.Type;
+                var UType = event.Type;
                 var Id = event.Id;
                     
                 if (!ClientId) return done({ "message": "Missing 'ClientId' cannot fetch response." });
@@ -61,10 +61,10 @@ module.exports.handle = function (event, context, callback) {
                     ExpressionAttributeValues[":id"] = Id;
                 }
                 
-                if (Type) {
+                if (UType) {
                     
-                    FilterExpression.push("Type = :type")
-                    ExpressionAttributeValues[":type"] = Type;
+                    FilterExpression.push("UType = :type")
+                    ExpressionAttributeValues[":type"] = UType;
                 }
                 
                 AttributesToGet.push("Id");
@@ -76,7 +76,7 @@ module.exports.handle = function (event, context, callback) {
                 AttributesToGet.push("Age");
                 AttributesToGet.push("Email");
                 AttributesToGet.push("Created");
-                AttributesToGet.push("Type");
+                AttributesToGet.push("UType");
                 
                 var params = {
                     TableName: TableName,

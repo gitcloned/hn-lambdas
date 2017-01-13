@@ -383,3 +383,129 @@ describe('User API', function (params) {
         })
     });
 })
+
+describe('Forms API', function (params) {
+    
+    var formsAPI = require('../module/forms/index');
+    
+    describe('#get()', function () {
+    
+        describe('without ClientId', function (params) {
+            
+            it("should return error", function (done) {
+            
+                formsAPI.handle({ 
+                    name: "forms",
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    
+                    done();
+                });
+            })
+        })
+        
+        describe('with proper request', function (params) {
+            
+            it("should return missing config error", function (done) {
+            
+                formsAPI.handle({ 
+                    name: "forms",
+                    ClientId: "SPPC"
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    resp.body.should.equal('Missing region in config');
+                    
+                    done();
+                });
+            })
+        })
+    });
+    
+    describe('#post()', function () {
+    
+        describe('without ClientId', function (params) {
+            
+            it("should return error", function (done) {
+            
+                formsAPI.handle({ 
+                    name: "forms",
+                    httpMethod: 'POST'
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    
+                    done();
+                });
+            })
+        })
+        
+        describe('with invalid Form', function (params) {
+            
+            it("should return error", function (done) {
+            
+                formsAPI.handle({ 
+                    name: "forms",
+                    ClientId: "SPPC",
+                    httpMethod: 'POST'
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    
+                    formsAPI.handle({ 
+                        name: "forms",
+                        ClientId: "SPPC",
+                        httpMethod: 'POST',
+                        Name: "Sample"
+                    }, {}, function (err, resp) {
+                        
+                        should.not.exist(err);
+                        should.exist(resp);
+                        should.exist(resp.statusCode);
+                        resp.statusCode.should.equal('400');
+                        
+                        resp.body.should.not.equal('Missing region in config');
+                            
+                        done();
+                    });
+                });
+            })
+        })
+        
+        describe('with valid form', function (params) {
+            
+            it("should return missing config error", function (done) {
+            
+                formsAPI.handle({ 
+                    name: "forms",
+                    ClientId: "SPPC",
+                    httpMethod: 'POST',
+                    Name: "Sample",
+                    form: "{}"
+                }, {}, function (err, resp) {
+                    
+                    should.not.exist(err);
+                    should.exist(resp);
+                    should.exist(resp.statusCode);
+                    resp.statusCode.should.equal('400');
+                    resp.body.should.equal('Missing region in config');
+                    
+                    done();
+                });
+            })
+        })
+    });
+})

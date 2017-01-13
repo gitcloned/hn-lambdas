@@ -15,7 +15,7 @@ var User = module.exports = function (params) {
         this.Email = typeof params.Email === "string" ? params.Email : null;
         this.Contact = params.Contact;
         this.Created = params.Created || moment.utc().toDate();
-        this.Type = params.Type || "User";
+        this.UType = params.UType || "User";
         this.Name = params.Name || [this.FirstName, this.LastName || " "].join(" ");
     }
 }
