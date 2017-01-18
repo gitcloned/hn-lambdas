@@ -10,6 +10,7 @@ var Form = module.exports = function (params) {
         this.Name = params.Name;
         this.Desc = typeof params.Desc === "string" ? params.Desc : null;
         this.FType = params.FType || "Active";
+        this.Password = params.Password || null;
         this.form = params.form;
     }
 }
@@ -32,11 +33,13 @@ Form.prototype.isInvalidInstance = function () {
     return false;
 }
 
-Form.prototype.item = function (params) {
+Form.prototype.item = function (removeEmpty) {
     
     var Item = {}, cnt = 1;
     for (var key in this) {
         if (this.hasOwnProperty(key)) {
+            
+            if (removeEmpty && (typeof this[key] === "undefined" || this[key] === null || this[key] === "")) continue;
             Item[key] = this[key]
             // console.log(key)
             // if (cnt++ > 3) break;

@@ -64,7 +64,11 @@ describe('Form API', function (params) {
                 "FormId": "F00001"
             }, {}, function (err, resp) {
         
-                assert.equal(err, null);
+                // should.not.exist(err);
+                // should.exist(resp);
+                // should.exist(resp.statusCode);
+                // resp.statusCode.should.equal('400');
+                // resp.body.should.equal('Missing region in config');
                 done();
             });
         })
@@ -508,4 +512,48 @@ describe('Forms API', function (params) {
             })
         })
     });
+    
+   
+    describe('#delete() with FormID, ClientId', function (params) {
+        
+        it("should not return any error", function (done) {
+        
+            formsAPI.handle({ 
+                name: "form",
+                "httpMethod": "DELETE",
+                "ClientId": "SPPC",
+                "FormId": "F00001"
+            }, {}, function (err, resp) {
+        
+                should.not.exist(err);
+                should.exist(resp);
+                should.exist(resp.statusCode);
+                resp.statusCode.should.equal('400');
+                resp.body.should.equal('Missing region in config');
+                done();
+            });
+        })
+    })
+   
+    describe('#put() with FormID, ClientId and some attribute', function (params) {
+        
+        it("should not return any error", function (done) {
+        
+            formsAPI.handle({ 
+                name: "form",
+                "httpMethod": "PUT",
+                "ClientId": "SPPC",
+                "FormId": "F00001",
+		"Desc": "Desc"
+            }, {}, function (err, resp) {
+
+                should.not.exist(err);
+                should.exist(resp);
+                should.exist(resp.statusCode);
+                resp.statusCode.should.equal('400');
+                resp.body.should.equal('Missing region in config');
+                done();
+            });
+        })
+    })
 })

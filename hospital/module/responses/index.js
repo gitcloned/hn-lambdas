@@ -6,6 +6,7 @@ const moment = require('moment');
 const uuidV1 = require('uuid/v1');
 
 const dynamo = new doc.DynamoDB();
+// const sql = require('dynamodb-sql')(dynamo);
 
 var D = require('./utils/date');
 
