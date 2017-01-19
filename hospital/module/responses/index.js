@@ -131,6 +131,13 @@ module.exports.handle = function (event, context, callback) {
                         if (Answers.hasOwnProperty(key)) {
                             
                             var Q = key, Score = Answers[key].Score, Resp = Answers[key].Resp;
+
+                            if (typeof Resp === "undefined")
+                                Resp = null;
+
+                            if (typeof Resp === "string" && !Resp.trim().length)
+                                Resp = null;
+
                             Item[Q + "_Score"] = Score;
                             Item[Q + "_Resp"] = Resp;
                         }
