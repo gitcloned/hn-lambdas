@@ -137,7 +137,7 @@ module.exports.handle = function (event, context, callback) {
                     }
                 }
 
-                // console.log("Inserting Form Response: %j", Item);
+                console.log("Inserting Form Response: %j", Item);
 
                 dynamo.putItem({ TableName: TableName, Item: Item }, function(err, resp) {
                     
