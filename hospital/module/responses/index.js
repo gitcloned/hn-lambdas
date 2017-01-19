@@ -139,7 +139,14 @@ module.exports.handle = function (event, context, callback) {
 
                 // console.log("Inserting Form Response: %j", Item);
 
-                dynamo.putItem({ TableName: TableName, Item: Item }, done);
+                dynamo.putItem({ TableName: TableName, Item: Item }, function(err, resp) {
+                    
+                    if (err) console.log(err);
+                    
+                    if (err) return done(err);
+                    
+                    callback(null, "ok");
+                });
             } catch(e) {
                 done({ message: e ? e.toString() : "Unknown error occurred while saving data" });
             }
