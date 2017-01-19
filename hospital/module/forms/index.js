@@ -88,7 +88,8 @@ module.exports.handle = function(event, context, callback) {
                     var row = {
                         "FormId": form["FormId"],
                         "Name": form.Name,
-                        "Description": form.Desc
+                        "Description": form.Desc,
+                        "Password": typeof form.Password !== "undefined" ? form.Password : null
                     };
 
                     if (Detailed) {
