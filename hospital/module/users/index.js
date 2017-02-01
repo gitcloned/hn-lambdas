@@ -16,6 +16,10 @@ module.exports.handle = function (event, context, callback) {
     var TableName = "HospitalUsers";
     var ClientId = "SPPC";
     var body = event.body;
+    
+    var env = event.env;
+    if (env !== "PROD")
+        TableName += "_" + env;
 
     event = event || {};
     event.httpMethod = event.httpMethod || "GET";

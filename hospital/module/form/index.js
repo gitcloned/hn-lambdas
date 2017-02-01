@@ -10,6 +10,10 @@ module.exports.handle = function(event, context, callback) {
 
     var TableName = "HospitalFormSurveyResults";
     var body = event.body;
+    
+    var env = event.env;
+    if (env !== "PROD")
+        TableName += "_" + env;
 
     event = event || {};
     event.httpMethod = event.httpMethod || "GET";

@@ -4,6 +4,9 @@
 const doc = require('dynamodb-doc');
 const moment = require('moment');
 const uuidV1 = require('uuid/v1');
+const async = require('async');
+const message = require('./sms');
+const email = require('./mail');
 
 const dynamo = new doc.DynamoDB();
 // const sql = require('dynamodb-sql')(dynamo);
@@ -19,6 +22,10 @@ module.exports.handle = function (event, context, callback) {
     var TableName = "HospitalFormSurveyResults";
     var ClientId = "SPPC";
     var body = event.body;
+    
+    var env = event.env;
+    if (env !== "PROD")
+        TableName += "_" + env;
 
     event = event || {};
     event.period = event.period || "1d";
@@ -41,7 +48,7 @@ module.exports.handle = function (event, context, callback) {
     switch (event.httpMethod) {
         
         case 'GET':
-            //try {
+            try {
                 var body = event.body ? JSON.parse(event.body) : {};
                 
                 var FormId = event.FormId;
@@ -77,21 +84,26 @@ module.exports.handle = function (event, context, callback) {
                     if (err) return done(err);
                     callback(null, res && res.Items ? res.Items : []);
                 });
-            /*} catch(e) {
+            } catch(e) {
                 done(e.toString());
-            }*/
+            }
             break;
             
         case 'POST':
         
-            try {
+            //try {
                 // console.log("preparing item to insert");
+                
+                body = body || null;
                 
                 var Answers = JSON.parse(body);
                 var FormId = event.FormId;
                 var ClientId = event.ClientId;
                 var UName = event.UserName;
                 var UContact = event.UserContact;
+                var MaxS = parseFloat(event.MaxScore || "0");
+                var EmailN = event.EmailN || null;
+                var SMSN = event.SMSN || null;
                     
                 if (!ClientId) return done({ "message": "Missing 'ClientId' cannot fetch response." });
                 if (!Answers || !FormId) return done({ "message": "Missing 'FormId' or 'Answers', cannot store form response." });
@@ -120,6 +132,8 @@ module.exports.handle = function (event, context, callback) {
                     Model: DeviceModel,
                     OS: DeviceOS
                 };
+                
+                var TotalScore = 0;
 
                 Item.Score = typeof event.Score === "number" ? event.Score : 0;
                 Item.Sentiment = typeof event.ScoreSentiment === "number" ? event.ScoreSentiment : 0;
@@ -140,23 +154,60 @@ module.exports.handle = function (event, context, callback) {
 
                             Item[Q + "_Score"] = Score;
                             Item[Q + "_Resp"] = Resp;
+                            
+                            TotalScore += Score;
                         }
                     }
                 }
-
-                console.log("Inserting Form Response: %j", Item);
-
-                dynamo.putItem({ TableName: TableName, Item: Item }, function(err, resp) {
+                
+                var ops = [];
+                
+                if (MaxS > 0 && SMSN != null && SMSN.trim().length > 0) {
                     
-                    if (err) console.log(err);
+                    // console.log("Inserting for SMS: %s", SMSN, MaxS, TotalScore);
                     
+                    
+                    ops.push(function(cb1) {
+                       
+                       message.nresp(SMSN, MaxS, TotalScore, { Name: UName, Contact: UContact }, Item, function(err, resp) {
+                           
+                           cb1(null);
+                       }); 
+                    });
+                    
+                    
+                    ops.push(function(cb1) {
+                       
+                       email.nresp(EmailN, MaxS, TotalScore, { Name: UName, Contact: UContact }, Item, ClientId, function(err, resp) {
+                           
+                           cb1(null);
+                       }); 
+                    });
+                }
+
+                // console.log("Inserting Form Response: %j", Item);
+                
+                ops.push(function(cb2) {
+                    
+                    dynamo.putItem({ TableName: TableName, Item: Item }, function(err, resp) {
+                    
+                        // if (err) console.log(err);
+                        
+                        if (err) return cb2(err);
+                        
+                        cb2(null, "ok");
+                    });                    
+                });
+                
+                async.parallel(ops, function(err, resp) {
+                        
                     if (err) return done(err);
                     
                     callback(null, "ok");
                 });
-            } catch(e) {
-                done({ message: e ? e.toString() : "Unknown error occurred while saving data" });
-            }
+            //} catch(e) {
+            //    done({ message: e ? e.toString() : "Unknown error occurred while saving data" });
+            //}
             break;
         
         default:

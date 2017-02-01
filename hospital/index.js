@@ -4,6 +4,7 @@ exports.handler = function (event, context, callback) {
 
     console.log("got event: %s", event.name);
     event.name = event.name || "summary";
+    event.env = ["DEV", "PROD"].indexOf(event.env) > -1 ? event.env : "PROD";
 
     if (event.name === "summary") {
 

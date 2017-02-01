@@ -15,6 +15,10 @@ module.exports.handle = function (event, context, callback) {
     var TableName = "HospitalForms";
     var ClientId = "SPPC";
     var body = event.body;
+    
+    var env = event.env || 'PROD';
+    if (env !== "PROD")
+        TableName += "_" + env;
 
     event = event || {};
     event.httpMethod = event.httpMethod || "GET";
@@ -85,6 +89,9 @@ module.exports.handle = function (event, context, callback) {
                             "scores": questions[i]["scores"] ? questions[i]["scores"].toString() : null,
                             "score_weight": questions[i]["score_weight"] ? questions[i]["score_weight"].toString() : null
                         })
+                        
+                        if (event.select == "detail")
+                            out[out.length - 1].form_name = res.Items[0].Name;
                     }
                     callback(null, out);
                 });

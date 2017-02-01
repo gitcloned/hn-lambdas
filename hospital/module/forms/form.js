@@ -11,6 +11,9 @@ var Form = module.exports = function (params) {
         this.Desc = typeof params.Desc === "string" ? params.Desc : null;
         this.FType = params.FType || "Active";
         this.Password = params.Password || null;
+        this.MaxS = typeof params.MaxS === "number" ? params.MaxS : 0;
+        this.EmailN = typeof params.EmailN === "string" ? params.EmailN : null;
+        this.SMSN = typeof params.SMSN === "string" ? params.SMSN : null;
         this.form = params.form;
     }
 }

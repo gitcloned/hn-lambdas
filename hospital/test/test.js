@@ -235,6 +235,8 @@ describe('Response API', function (params) {
                     UserContact: '1919191',
                 }, {}, function (err, resp) {
                     
+                    console.log(err);
+                    
                     should.not.exist(err);
                     should.exist(resp);
                     should.exist(resp.statusCode);
